@@ -1,0 +1,128 @@
+openapi: 3.0.1
+info:
+  title: Exemple API
+  description: API d'exemple pour tester la transformation
+  version: 1.0.0
+servers:
+  - url: https://api.exemple.com
+    description: Serveur de production
+
+paths:
+  /users:
+    get:
+      summary: Récupérer tous les utilisateurs
+      description: Retourne la liste de tous les utilisateurs
+      responses:
+        "200":
+          description: Liste des utilisateurs récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "401":
+          description: Non autorisé
+        "403":
+          description: Interdit
+    post:
+      summary: Créer un nouvel utilisateur
+      description: Crée un nouvel utilisateur dans le système
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUser"
+      responses:
+        "201":
+          description: Utilisateur créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Données invalides
+        "401":
+          description: Non autorisé
+        "403":
+          description: Interdit
+
+  /users/{id}:
+    get:
+      summary: Récupérer un utilisateur par ID
+      description: Retourne les détails d'un utilisateur spécifique
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de l'utilisateur
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Utilisateur trouvé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: Utilisateur non trouvé
+        "401":
+          description: Non autorisé
+        "403":
+          description: Interdit
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID unique de l'utilisateur
+        nom:
+          type: string
+          description: Nom de l'utilisateur
+        email:
+          type: string
+          format: email
+          description: Adresse email de l'utilisateur
+        dateCreation:
+          type: string
+          format: date-time
+          description: Date de création du compte
+      required:
+        - id
+        - nom
+        - email
+
+    CreateUser:
+      type: object
+      properties:
+        nom:
+          type: string
+          description: Nom de l'utilisateur
+        email:
+          type: string
+          format: email
+          description: Adresse email de l'utilisateur
+      required:
+        - nom
+        - email
+
+  securitySchemes:
+    apiKeyHeader:
+      type: apiKey
+      name: Ocp-Apim-Subscription-Key
+      in: header
+    apiKeyQuery:
+      type: apiKey
+      name: subscription-key
+      in: query
+
+security:
+  - apiKeyHeader: []
+  - apiKeyQuery: []

@@ -1,0 +1,154 @@
+openapi: 3.0.4
+info:
+  title: Exemple API
+  description: API d'exemple pour tester la transformation
+  version: 1.0.0
+servers:
+  - url: https://api.exemple.com
+    description: Serveur de production
+paths:
+  /users:
+    get:
+      summary: Récupérer tous les utilisateurs
+      description: Retourne la liste de tous les utilisateurs
+      parameters:
+        - name: Ocp-Apim-Subscription-Key
+          in: header
+          description: Clé de souscription API (apiKeyHeader)
+          schema:
+            type: string
+        - name: subscription-key
+          in: query
+          description: Clé de souscription API (apiKeyQuery)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Liste des utilisateurs récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          description: Non autorisé
+        '403':
+          description: Interdit
+    post:
+      summary: Créer un nouvel utilisateur
+      description: Crée un nouvel utilisateur dans le système
+      parameters:
+        - name: Ocp-Apim-Subscription-Key
+          in: header
+          description: Clé de souscription API (apiKeyHeader)
+          schema:
+            type: string
+        - name: subscription-key
+          in: query
+          description: Clé de souscription API (apiKeyQuery)
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+        required: true
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Données invalides
+        '401':
+          description: Non autorisé
+        '403':
+          description: Interdit
+  '/users/{id}':
+    get:
+      summary: Récupérer un utilisateur par ID
+      description: Retourne les détails d'un utilisateur spécifique
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'utilisateur
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: Ocp-Apim-Subscription-Key
+          in: header
+          description: Clé de souscription API (apiKeyHeader)
+          schema:
+            type: string
+        - name: subscription-key
+          in: query
+          description: Clé de souscription API (apiKeyQuery)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Utilisateur trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Utilisateur non trouvé
+        '401':
+          description: Non autorisé
+        '403':
+          description: Interdit
+components:
+  schemas:
+    User:
+      required:
+        - id
+        - nom
+        - email
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID unique de l'utilisateur
+          format: int64
+        nom:
+          type: string
+          description: Nom de l'utilisateur
+        email:
+          type: string
+          description: Adresse email de l'utilisateur
+          format: email
+        dateCreation:
+          type: string
+          description: Date de création du compte
+          format: date-time
+    CreateUser:
+      required:
+        - nom
+        - email
+      type: object
+      properties:
+        nom:
+          type: string
+          description: Nom de l'utilisateur
+        email:
+          type: string
+          description: Adresse email de l'utilisateur
+          format: email
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      description: OAuth2 Bearer Token
+      flows:
+        clientCredentials:
+          tokenUrl: 'https://login.microsoftonline.com/{tenant-id}/oauth2/v2.0/token'
+          scopes:
+            https://graph.microsoft.com/.default: Accès aux APIs
+security:
+  - oauth2:
+      - https://graph.microsoft.com/.default
