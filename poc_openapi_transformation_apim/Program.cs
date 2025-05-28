@@ -165,12 +165,13 @@ namespace OpenApiTransformation
                     Type = SecuritySchemeType.OAuth2,
                     Flows = new OpenApiOAuthFlows
                     {
-                        ClientCredentials = new OpenApiOAuthFlow
+                        AuthorizationCode = new OpenApiOAuthFlow
                         {
-                            TokenUrl = new Uri("https://login.microsoftonline.com/{tenant-id}/oauth2/v2.0/token"),
+                            AuthorizationUrl = new Uri("https://inte-oauth.cegid.com/authorize"),
+                            TokenUrl = new Uri("https://inte-oauth.cegid.com/token"),
                             Scopes = new Dictionary<string, string>
                             {
-                                { "https://graph.microsoft.com/.default", "Accès aux APIs" }
+                                { "sampleapp.weather.read", "Accès aux APIs" }
                             }
                         }
                     },
@@ -194,7 +195,7 @@ namespace OpenApiTransformation
                                 Id = "oauth2"
                             }
                         },
-                        new List<string> { "https://graph.microsoft.com/.default" }
+                        new List<string> { "sampleapp.weather.read" }
                     }
                 };
 

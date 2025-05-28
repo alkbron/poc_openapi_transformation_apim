@@ -60,6 +60,16 @@ if ($dialogResult -eq [System.Windows.Forms.DialogResult]::OK) {
     if (Test-Path $outputFile) {
         Write-Host "✅ Transformation terminée! Fichier créé: $outputFile" -ForegroundColor Green
         
+        # Copier le contenu du fichier modifié dans le presse-papiers
+        try {
+            $fileContent = Get-Content $outputFile -Raw
+            Set-Clipboard -Value $fileContent
+            Write-Host "📋 Contenu du fichier OpenAPI modifié copié dans le presse-papiers!" -ForegroundColor Green
+        }
+        catch {
+            Write-Host "❌ Erreur lors de la copie dans le presse-papiers: $($_.Exception.Message)" -ForegroundColor Red
+        }
+        
         # Proposer d'ouvrir le fichier de sortie dans l'explorateur
         Write-Host "📂 Voulez-vous ouvrir le dossier contenant le fichier transformé? (O/N)" -ForegroundColor Yellow
         $openFolder = Read-Host
@@ -76,6 +86,7 @@ if ($dialogResult -eq [System.Windows.Forms.DialogResult]::OK) {
         Write-Host "================================================" -ForegroundColor Cyan
         
         Write-Host "💡 Pour voir le fichier complet: Get-Content '$outputFile'" -ForegroundColor Yellow
+        Write-Host "📋 Le contenu complet est disponible dans le presse-papiers (Ctrl+V)" -ForegroundColor Yellow
     } else {
         Write-Host "❌ Erreur: Le fichier de sortie n'a pas été créé!" -ForegroundColor Red
     }
